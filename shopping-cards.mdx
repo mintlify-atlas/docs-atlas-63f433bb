@@ -1,0 +1,164 @@
+---
+title: Shopping cards
+description: Automatically extract structured product and pricing data from ChatGPT responses
+---
+
+One of the unique features of the ChatGPT scraper is automatic extraction of shopping cards when ChatGPT returns product or commercial information. No additional parameters are required - shopping cards are included by default when available in the response.
+
+## Automatic extraction
+
+Shopping cards are automatically detected and extracted from ChatGPT responses at no additional cost. When ChatGPT includes product recommendations or commercial information in its response, the scraper parses this data into structured shopping card objects.
+
+<Note>
+Shopping cards are included by default in the response structure. You don't need to set any special parameters to enable them.
+</Note>
+
+## Shopping card features
+
+Each shopping card provides comprehensive product information:
+
+<CardGroup cols={2}>
+  <Card title="Comprehensive product data" icon="box">
+    Product titles, prices, ratings, reviews, images, and merchant information
+  </Card>
+  <Card title="Multiple offers" icon="tags">
+    Compare prices across different merchants for the same product
+  </Card>
+  <Card title="Rating citations" icon="star">
+    Track the source of product ratings and supporting websites
+  </Card>
+  <Card title="Promotional tags" icon="badge-percent">
+    Identify special offers like "Best price" or promotional deals
+  </Card>
+  <Card title="Stock information" icon="warehouse">
+    Check product availability and delivery details
+  </Card>
+  <Card title="Product images" icon="image">
+    Access product image URLs for visual display
+  </Card>
+</CardGroup>
+
+## Shopping card structure
+
+Here's a sample shopping card from the API response:
+
+```json
+{
+  "tags": ["electronics", "deals"],
+  "products": [
+    {
+      "title": "Example Product",
+      "url": "https://example.com/product",
+      "price": "$57.00",
+      "featured_tag": "electronics",
+      "merchant": "Example Store + others",
+      "imageUrls": ["https://example.com/image.jpg"],
+      "rating": 4.5,
+      "numReviews": 128,
+      "id": "prod_123",
+      "offers": [
+        {
+          "merchant_name": "Example Store",
+          "product_name": "Example Product",
+          "url": "https://example.com/offer",
+          "price": "$57.00",
+          "details": "In stock, ships in 2-3 days",
+          "available": true,
+          "checkoutable": true,
+          "price_details": {
+            "base": "$57.00",
+            "total": "$57.00"
+          },
+          "tag": {
+            "text": "Best price",
+            "type": "promotion"
+          }
+        }
+      ],
+      "rating_grouped_citation": {
+        "title": "Product Reviews",
+        "url": "https://example.com/reviews",
+        "supporting_websites": ["example.com"]
+      }
+    }
+  ]
+}
+```
+
+## Product data fields
+
+Each product in a shopping card includes:
+
+| Field | Description | Type |
+|-------|-------------|------|
+| `title` | Product name | string |
+| `url` | Product page URL with ChatGPT attribution | string |
+| `price` | Current price | string |
+| `featured_tag` | Product category or style tag | string |
+| `merchant` | Merchant information | string |
+| `imageUrls` | Array of product image URLs | array |
+| `rating` | Product rating (0-5 scale) | float |
+| `numReviews` | Number of reviews | integer |
+| `id` | Unique product identifier | string |
+| `offers` | Array of shopping offers from different merchants | array |
+| `rating_grouped_citation` | Rating source information | object |
+
+## Offer details
+
+Each offer within a product provides merchant-specific information:
+
+<Accordion title="Offer structure fields">
+  | Field | Description | Type |
+  |-------|-------------|------|
+  | `merchant_name` | Merchant name | string |
+  | `product_name` | Product name as listed by merchant | string |
+  | `url` | Offer URL with ChatGPT attribution | string |
+  | `price` | Offer price | string |
+  | `details` | Stock and delivery information | string |
+  | `available` | Offer availability status | boolean |
+  | `checkoutable` | Whether offer can be checked out directly | boolean |
+  | `price_details` | Detailed price breakdown (base, total) | object |
+  | `tag` | Promotional tag (e.g., "Best price") | object |
+</Accordion>
+
+## Rating citations
+
+The `rating_grouped_citation` object tracks where product ratings come from:
+
+| Field | Description | Type |
+|-------|-------------|------|
+| `title` | Source title | string |
+| `url` | Source URL | string |
+| `supporting_websites` | Array of supporting website references | array |
+
+## Use cases for shopping cards
+
+Shopping cards enable powerful e-commerce and market intelligence applications:
+
+### E-commerce monitoring
+
+Track how ChatGPT surfaces and recommends products to understand AI-driven product discovery. Monitor which products appear in responses to specific queries and how they're positioned.
+
+### Price comparison
+
+Monitor pricing across different merchants and marketplaces. Each shopping card includes multiple offers, allowing you to track price variations and identify the best deals.
+
+<Tip>
+Use the promotional tags to identify special offers and time-limited deals automatically.
+</Tip>
+
+### Product research
+
+Extract structured product data for competitive analysis. Analyze product ratings, review counts, and merchant information to understand market positioning.
+
+### Marketing intelligence
+
+Understand which products ChatGPT highlights in responses to marketing-related queries. Track how your products or competitors' products appear in AI-generated recommendations.
+
+<Info>
+Shopping cards provide attribution URLs that include ChatGPT tracking, allowing you to understand the source and context of product recommendations.
+</Info>
+
+## Credit usage
+
+Shopping cards are included at no additional cost. They're automatically extracted when available in ChatGPT responses as part of the base API call.

@@ -1,0 +1,295 @@
+---
+title: Python integration guide
+description: Learn how to integrate the ChatGPT Scraper API into your Python applications using the requests library
+---
+
+This guide shows you how to use the ChatGPT Scraper API with Python to programmatically collect AI-generated responses and structured metadata.
+
+## Installation
+
+Before you begin, install the `requests` library if you haven't already:
+
+```bash
+pip install requests
+```
+
+## Quick start
+
+<Steps>
+  <Step title="Import required libraries">
+    You'll need the `requests` library for making HTTP requests and `json` for handling the response data.
+    
+    ```python
+    import json
+    import requests
+    ```
+  </Step>
+
+  <Step title="Configure your API request">
+    Set up your payload with the prompt and optional parameters. Replace `YOUR_API_KEY` with your actual API key from the cloro dashboard.
+    
+    ```python
+    # API parameters
+    payload = {
+        'prompt': 'Compare the top 3 programming languages for web development in 2025',
+        'country': 'US',
+        'include': {
+            'markdown': True,
+            'rawResponse': True,
+            'searchQueries': True
+        }
+    }
+    
+    # Get a response
+    response = requests.post(
+        'https://api.cloro.dev/v1/monitor/chatgpt',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'},
+        json=payload
+    )
+    ```
+  </Step>
+
+  <Step title="Handle the response">
+    Process the API response by printing it to stdout or saving it to a file.
+    
+    ```python
+    # Print response to stdout
+    print(response.json())
+    
+    # Save response to a JSON file
+    with open('response.json', 'w') as file:
+        json.dump(response.json(), file, indent=2)
+    ```
+  </Step>
+</Steps>
+
+## Complete example
+
+<CodeGroup>
+```python Basic request
+import json
+import requests
+
+# API parameters
+payload = {
+    'prompt': 'Compare the top 3 programming languages for web development in 2025',
+    'country': 'US',
+    'include': {
+        'markdown': True,
+        'rawResponse': True,
+        'searchQueries': True
+    }
+}
+
+# Get a response
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+
+# Print response to stdout
+print(response.json())
+
+# Save response to a JSON file
+with open('response.json', 'w') as file:
+    json.dump(response.json(), file, indent=2)
+```
+
+```python With error handling
+import json
+import requests
+
+try:
+    # API parameters
+    payload = {
+        'prompt': 'Compare the top 3 programming languages for web development in 2025',
+        'country': 'US',
+        'include': {
+            'markdown': True,
+            'rawResponse': True,
+            'searchQueries': True
+        }
+    }
+    
+    # Get a response
+    response = requests.post(
+        'https://api.cloro.dev/v1/monitor/chatgpt',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'},
+        json=payload,
+        timeout=180  # 3 minutes timeout
+    )
+    
+    # Raise an exception for bad status codes
+    response.raise_for_status()
+    
+    # Process successful response
+    data = response.json()
+    print(data)
+    
+    # Save response to a JSON file
+    with open('response.json', 'w') as file:
+        json.dump(data, file, indent=2)
+        
+except requests.exceptions.Timeout:
+    print("Request timed out. ChatGPT responses may take longer for complex prompts.")
+except requests.exceptions.HTTPError as e:
+    print(f"HTTP error occurred: {e}")
+except requests.exceptions.RequestException as e:
+    print(f"Error occurred: {e}")
+```
+</CodeGroup>
+
+## Request parameters
+
+You can customize your API request using these parameters:
+
+| Parameter | Description | Default value |
+|-----------|-------------|---------------|
+| `prompt`* | The prompt or question to send to ChatGPT (1-10,000 characters) | – |
+| `country` | Optional country/region code for localized monitoring (e.g., `US`, `GB`, `DE`) | – |
+| `include.markdown` | Include response in Markdown format when set to true | `false` |
+| `include.rawResponse` | Include raw streaming response events for debugging (+2 credits) | `false` |
+| `include.searchQueries` | Include query fan-out ChatGPT used to generate response (+2 credits) | `false` |
+
+<Note>
+  The `prompt` parameter is mandatory. All other parameters are optional.
+</Note>
+
+## Handling the response
+
+The API returns a JSON object with the following structure:
+
+```python
+{
+  "status": "success",
+  "result": {
+    "model": "gpt-5-mini",
+    "text": "When comparing programming languages for web development in 2025, three languages stand out...",
+    "markdown": "**When comparing programming languages for web development in 2025**, three languages stand out...",
+    "shoppingCards": [...],
+    "searchQueries": ["web development languages 2025"],
+    "rawResponse": [...]
+  }
+}
+```
+
+You can access specific fields like this:
+
+```python
+data = response.json()
+model = data['result']['model']
+text_response = data['result']['text']
+markdown_response = data['result']['markdown']
+```
+
+## Saving responses to files
+
+To save the ChatGPT response to a JSON file:
+
+```python
+import json
+
+# Save the complete response
+with open('response.json', 'w') as file:
+    json.dump(response.json(), file, indent=2)
+
+# Or save just the text response
+data = response.json()
+with open('chatgpt_response.txt', 'w') as file:
+    file.write(data['result']['text'])
+```
+
+## Timeout configuration
+
+<Tip>
+  Set an appropriate timeout (120-180 seconds) when making requests, as ChatGPT responses may take time to generate depending on complexity.
+</Tip>
+
+```python
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload,
+    timeout=180  # 3 minutes
+)
+```
+
+For production use, consider implementing a retry mechanism instead of relying solely on timeouts, as the cloro system retries automatically.
+
+## Error handling best practices
+
+Implement comprehensive error handling to manage different failure scenarios:
+
+```python
+import requests
+import json
+from time import sleep
+
+def make_chatgpt_request(payload, max_retries=3):
+    """Make a request to ChatGPT API with retry logic."""
+    
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                'https://api.cloro.dev/v1/monitor/chatgpt',
+                headers={'Authorization': 'Bearer YOUR_API_KEY'},
+                json=payload,
+                timeout=180
+            )
+            
+            # Check for successful status code
+            response.raise_for_status()
+            
+            return response.json()
+            
+        except requests.exceptions.Timeout:
+            print(f"Attempt {attempt + 1} timed out")
+            if attempt < max_retries - 1:
+                sleep(5)  # Wait before retrying
+                continue
+            raise
+            
+        except requests.exceptions.HTTPError as e:
+            if response.status_code == 429:  # Rate limit
+                print("Rate limit reached, waiting before retry...")
+                sleep(10)
+                continue
+            elif response.status_code >= 500:  # Server error
+                print(f"Server error on attempt {attempt + 1}")
+                if attempt < max_retries - 1:
+                    sleep(5)
+                    continue
+            raise
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            if attempt < max_retries - 1:
+                sleep(5)
+                continue
+            raise
+    
+    raise Exception("Max retries reached")
+
+# Use the function
+payload = {
+    'prompt': 'Your prompt here',
+    'country': 'US'
+}
+
+try:
+    result = make_chatgpt_request(payload)
+    print(result['result']['text'])
+except Exception as e:
+    print(f"Failed to get response: {e}")
+```
+
+<Note>
+  Always check the `status` field in the response to verify successful execution before accessing the `result` data.
+</Note>
+
+## Next steps
+
+- Explore the [API reference](/api-reference) for detailed endpoint documentation
+- Learn about [shopping card extraction](/features/shopping-cards) for e-commerce data
+- Check out [advanced features](/features/advanced) like query fan-out insights

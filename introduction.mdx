@@ -1,0 +1,194 @@
+---
+title: ChatGPT Scraper API
+description: Programmatically interact with ChatGPT and automatically collect AI-generated responses with structured metadata
+---
+
+# ChatGPT Scraper API
+
+The ChatGPT Scraper API by cloro enables you to programmatically interact with ChatGPT and automatically collect AI-generated responses along with structured metadata. Instead of manual data collection, you can retrieve results as parsed JSON, raw HTML, or other formats for seamless integration into your workflows.
+
+You can use cloro's ChatGPT Scraper for AI research, content generation automation, competitive analysis, and conversation monitoring. It handles dynamic AI-generated content, supports real-time extraction, and eliminates the need to manage authentication, sessions, or anti-bot systems.
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get up and running with your first API call in minutes
+  </Card>
+  <Card
+    title="API reference"
+    icon="code"
+    href="/api-reference"
+  >
+    Explore detailed API parameters and response structures
+  </Card>
+  <Card
+    title="Use cases"
+    icon="lightbulb"
+    href="/use-cases"
+  >
+    Discover practical applications for the ChatGPT Scraper
+  </Card>
+  <Card
+    title="Shopping cards"
+    icon="shopping-cart"
+    href="/shopping-cards"
+  >
+    Learn about automatic product data extraction
+  </Card>
+</CardGroup>
+
+## Key features
+
+### Automatic shopping card extraction
+
+One of the unique features of cloro's ChatGPT scraper is automatic extraction of shopping cards when ChatGPT returns product or commercial information. No additional parameters are required - shopping cards are included by default when available in the response.
+
+Each shopping card includes comprehensive product data such as titles, prices, ratings, reviews, images, and merchant information. You can compare prices across different merchants, track rating sources, identify promotional deals, and check product availability.
+
+### Query fan-out insights
+
+When you set `include.searchQueries` to `true`, cloro reveals the actual query fan-out ChatGPT used internally to generate its response. This provides valuable insight into:
+
+- How ChatGPT interprets and breaks down your prompt
+- What specific searches it performs to gather information
+- How to optimize your prompts for better results
+
+<Note>
+Query fan-out insights require an additional 2 credits per request.
+</Note>
+
+### Raw response access
+
+Enable `include.rawResponse` to access the complete streaming response payload. This is useful for:
+
+- Advanced debugging and analysis
+- Understanding response generation timing
+- Accessing low-level response metadata
+
+<Note>
+Raw response access requires an additional 2 credits per request.
+</Note>
+
+### Multiple output formats
+
+Retrieve ChatGPT responses in multiple formats:
+
+- **Plain text**: Clean, structured text output
+- **Markdown**: Formatted content perfect for documentation workflows and AI tools
+- **Structured JSON**: Complete metadata including model information, shopping cards, and more
+
+### Reliable performance
+
+cloro handles the infrastructure complexity so you don't have to:
+
+- **>99% uptime** with low latencies (P50 < 60s, P90 < 120s)
+- **No rate limiting concerns** - we handle it for you
+- **Automatic retries** built into the system
+- **No browser management** required
+
+### Simple integration
+
+Get started quickly with:
+
+- Clean REST API design
+- Comprehensive documentation and examples
+- Code samples in Python, Node.js, and cURL
+- Responsive support team
+
+## Practical use cases
+
+1. **E-commerce tracking**: Monitor product recommendations and pricing with automatic shopping card extraction
+2. **AI research and benchmarking**: Analyze ChatGPT's responses with raw response data and query fan-out insights
+3. **Content generation at scale**: Automate content creation with structured, monitored responses
+4. **Competitive intelligence**: Track how ChatGPT presents information about your brand, products, or competitors
+5. **Data enrichment**: Enhance datasets with AI-generated insights in multiple formats (text, Markdown)
+6. **SEO and visibility monitoring**: Understand how ChatGPT sources and presents information in your industry
+
+## How it works
+
+The ChatGPT scraper handles the rendering, parsing, and delivery of results in your requested format. You provide your prompt, API credentials, and optional parameters. The API returns either an HTML document or a structured JSON object containing ChatGPT's response and metadata.
+
+<CodeGroup>
+
+```python Python
+import json
+import requests
+
+# API parameters
+payload = {
+    'prompt': 'Compare the top 3 programming languages for web development in 2025',
+    'country': 'US',
+    'include': {
+        'markdown': True,
+        'rawResponse': True,
+        'searchQueries': True
+    }
+}
+
+# Get a response
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+
+# Print response to stdout
+print(response.json())
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const payload = {
+  prompt: 'Compare the top 3 programming languages for web development in 2025',
+  country: 'US',
+  include: {
+    markdown: true,
+    rawResponse: true,
+    searchQueries: true
+  }
+};
+
+axios.post('https://api.cloro.dev/v1/monitor/chatgpt', payload, {
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => {
+  console.log(response.data);
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+```
+
+```bash cURL
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Compare the top 3 programming languages for web development in 2025",
+    "country": "US",
+    "include": {
+      "markdown": true,
+      "rawResponse": true,
+      "searchQueries": true
+    }
+  }'
+```
+
+</CodeGroup>
+
+## Why choose cloro?
+
+- **Simple integration**: Clean API design with comprehensive documentation and examples
+- **Reliable performance**: >99% uptime and low latencies (P50 < 60s, P90 < 120s)
+- **No infrastructure hassle**: We handle rate limiting and browser management
+- **Flexible pricing**: Low-cost subscription model with transparent pricing and volume discount
+- **Developer support**: Responsive support team to help with integration and troubleshooting

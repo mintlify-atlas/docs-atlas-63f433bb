@@ -1,0 +1,381 @@
+---
+title: Competitive intelligence
+description: Track how ChatGPT presents information about your brand, products, and competitors for strategic insights
+---
+
+## What is competitive intelligence with ChatGPT?
+
+Competitive intelligence using the ChatGPT Scraper API enables you to monitor and analyze how ChatGPT presents information about your brand, products, services, and competitors. As AI assistants become primary information sources for consumers and decision-makers, understanding your AI visibility is crucial for strategic positioning.
+
+## Why monitor ChatGPT for competitive intelligence?
+
+ChatGPT is rapidly becoming a primary discovery and research tool. Monitoring how it presents your brand provides:
+
+- **Brand visibility insights:** Understand how ChatGPT describes your company and offerings
+- **Competitive positioning:** See how you're positioned relative to competitors
+- **Sentiment analysis:** Track the tone and framing of AI-generated content about your brand
+- **Product mentions:** Monitor which products or features ChatGPT highlights
+- **Market trends:** Identify emerging themes and topics in your industry
+- **Strategic opportunities:** Discover gaps in your AI presence and messaging
+
+<Note>
+As AI-powered search and discovery tools gain adoption, traditional SEO is being complemented by "AIO" (AI Optimization). Understanding your ChatGPT visibility is essential for modern digital strategy.
+</Note>
+
+## Key features for competitive intelligence
+
+<CardGroup cols={2}>
+  <Card title="Brand monitoring" icon="building">
+    Track how ChatGPT describes your brand, products, and services across different queries
+  </Card>
+  
+  <Card title="Competitor analysis" icon="users">
+    Compare how ChatGPT presents your brand versus competitors in similar contexts
+  </Card>
+  
+  <Card title="Structured data" icon="table">
+    Collect responses in JSON format for systematic analysis and trend tracking
+  </Card>
+  
+  <Card title="Query insights" icon="magnifying-glass-chart">
+    Use query fan-out to understand how ChatGPT researches topics in your industry
+  </Card>
+</CardGroup>
+
+## Monitoring workflow
+
+### Step 1: Define monitoring strategy
+
+Identify what you want to track:
+
+- **Brand queries:** Company name, product names, key executives
+- **Category queries:** Industry terms, use cases, solution categories
+- **Competitive queries:** Comparison questions, "best of" queries
+- **Product queries:** Feature inquiries, recommendations, alternatives
+
+### Step 2: Create monitoring prompts
+
+Develop a set of strategic prompts to monitor regularly:
+
+```python
+import requests
+from datetime import datetime
+
+MONITORING_PROMPTS = [
+    # Direct brand queries
+    "What is [Your Company]?",
+    "Tell me about [Your Product]",
+    
+    # Competitive queries
+    "Compare [Your Product] vs [Competitor Product]",
+    "What are the best [product category] solutions?",
+    
+    # Industry queries
+    "What are the leading companies in [your industry]?",
+    "How to choose a [product category] provider?",
+    
+    # Problem-solution queries
+    "How to solve [problem your product addresses]?",
+    "Best practices for [use case your product serves]"
+]
+
+def monitor_brand_visibility(prompts):
+    """Monitor brand visibility across multiple prompts."""
+    
+    results = []
+    
+    for prompt in prompts:
+        payload = {
+            'prompt': prompt,
+            'include': {
+                'markdown': True,
+                'searchQueries': True
+            }
+        }
+        
+        response = requests.post(
+            'https://api.cloro.dev/v1/monitor/chatgpt',
+            headers={'Authorization': 'Bearer YOUR_API_KEY'},
+            json=payload,
+            timeout=180
+        )
+        
+        data = response.json()
+        
+        results.append({
+            'prompt': prompt,
+            'response': data['result']['text'],
+            'markdown': data['result'].get('markdown', ''),
+            'model': data['result']['model'],
+            'search_queries': data['result'].get('searchQueries', []),
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    return results
+
+# Run monitoring
+monitoring_data = monitor_brand_visibility(MONITORING_PROMPTS)
+```
+
+### Step 3: Analyze brand mentions
+
+Extract insights from collected data:
+
+```python
+import json
+
+def analyze_brand_mentions(results, brand_name):
+    """Analyze how often and in what context your brand is mentioned."""
+    
+    analysis = {
+        'total_prompts': len(results),
+        'mentions': 0,
+        'mention_contexts': [],
+        'sentiment_indicators': [],
+        'product_mentions': []
+    }
+    
+    for result in results:
+        response_text = result['response'].lower()
+        brand_lower = brand_name.lower()
+        
+        # Check for brand mentions
+        if brand_lower in response_text:
+            analysis['mentions'] += 1
+            
+            # Extract context around mention
+            sentences = response_text.split('.')
+            for sentence in sentences:
+                if brand_lower in sentence:
+                    analysis['mention_contexts'].append(sentence.strip())
+    
+    # Calculate mention rate
+    analysis['mention_rate'] = analysis['mentions'] / analysis['total_prompts']
+    
+    return analysis
+
+# Analyze results
+brand_analysis = analyze_brand_mentions(monitoring_data, 'Your Company')
+print(f"Brand mentioned in {brand_analysis['mention_rate']:.1%} of responses")
+```
+
+<Tip>
+Run monitoring campaigns weekly or monthly to track changes in how ChatGPT presents your brand over time.
+</Tip>
+
+## Competitive comparison
+
+Compare your brand visibility against competitors:
+
+```python
+def compare_competitors(prompts, brands):
+    """Compare mention rates across multiple brands."""
+    
+    # Collect data for competitive prompts
+    results = monitor_brand_visibility(prompts)
+    
+    comparison = {}
+    
+    for brand in brands:
+        analysis = analyze_brand_mentions(results, brand)
+        comparison[brand] = {
+            'mention_rate': analysis['mention_rate'],
+            'total_mentions': analysis['mentions'],
+            'contexts': analysis['mention_contexts'][:3]  # Top 3 contexts
+        }
+    
+    return comparison
+
+# Compare your brand vs competitors
+competitive_prompts = [
+    "What are the best [product category] tools?",
+    "Compare top [industry] solutions",
+    "Which [product category] should I choose?"
+]
+
+brands_to_track = ['Your Company', 'Competitor A', 'Competitor B']
+
+comparison = compare_competitors(competitive_prompts, brands_to_track)
+
+# Display comparison
+for brand, metrics in comparison.items():
+    print(f"\n{brand}:")
+    print(f"  Mention rate: {metrics['mention_rate']:.1%}")
+    print(f"  Total mentions: {metrics['total_mentions']}")
+```
+
+## Shopping card intelligence
+
+For e-commerce brands, monitor product visibility in shopping cards:
+
+```python
+def analyze_shopping_visibility(prompt):
+    """Analyze product visibility in shopping card results."""
+    
+    payload = {'prompt': prompt}
+    
+    response = requests.post(
+        'https://api.cloro.dev/v1/monitor/chatgpt',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'},
+        json=payload
+    )
+    
+    data = response.json()
+    
+    # Analyze shopping cards
+    if 'shoppingCards' in data['result']:
+        products_found = []
+        
+        for card in data['result']['shoppingCards']:
+            for product in card['products']:
+                products_found.append({
+                    'title': product['title'],
+                    'price': product['price'],
+                    'rating': product.get('rating'),
+                    'merchant': product.get('merchant'),
+                    'position': len(products_found) + 1
+                })
+        
+        return products_found
+    
+    return []
+
+# Monitor product recommendations
+product_query = "Best wireless headphones under $200"
+products = analyze_shopping_visibility(product_query)
+
+print(f"Found {len(products)} products")
+for i, product in enumerate(products[:5], 1):
+    print(f"{i}. {product['title']} - {product['price']}")
+```
+
+## SEO and visibility monitoring
+
+Understand how ChatGPT sources information in your industry:
+
+```python
+def analyze_query_fanout(prompts):
+    """Analyze what queries ChatGPT uses to research your industry."""
+    
+    all_queries = []
+    
+    for prompt in prompts:
+        payload = {
+            'prompt': prompt,
+            'include': {'searchQueries': True}
+        }
+        
+        response = requests.post(
+            'https://api.cloro.dev/v1/monitor/chatgpt',
+            headers={'Authorization': 'Bearer YOUR_API_KEY'},
+            json=payload
+        )
+        
+        data = response.json()
+        
+        if 'searchQueries' in data['result']:
+            all_queries.extend(data['result']['searchQueries'])
+    
+    # Analyze query patterns
+    query_insights = {
+        'total_queries': len(all_queries),
+        'unique_queries': len(set(all_queries)),
+        'common_terms': extract_common_terms(all_queries)
+    }
+    
+    return query_insights
+
+def extract_common_terms(queries):
+    """Extract common terms from search queries."""
+    from collections import Counter
+    
+    all_words = []
+    for query in queries:
+        words = query.lower().split()
+        all_words.extend(words)
+    
+    # Return top 10 most common terms
+    return Counter(all_words).most_common(10)
+```
+
+<Note>
+Query fan-out insights require additional credits (+2 per request) but provide valuable data about how ChatGPT researches topics in your industry.
+</Note>
+
+## Intelligence reporting
+
+<CardGroup cols={2}>
+  <Card title="Visibility tracking" icon="chart-line">
+    Monitor mention rates and positioning changes over time to track brand visibility trends
+  </Card>
+  
+  <Card title="Competitive benchmarking" icon="scale-balanced">
+    Compare your brand mentions and positioning against key competitors regularly
+  </Card>
+  
+  <Card title="Sentiment analysis" icon="message">
+    Analyze the tone and context of brand mentions to understand AI-generated sentiment
+  </Card>
+  
+  <Card title="Product positioning" icon="box">
+    Track which features and benefits ChatGPT emphasizes about your products
+  </Card>
+</CardGroup>
+
+## Best practices
+
+- **Regular monitoring:** Set up weekly or monthly monitoring cycles to track changes
+- **Diverse prompts:** Use varied prompts to capture different contexts and use cases
+- **Baseline establishment:** Create initial benchmarks to measure improvement over time
+- **Action-oriented:** Use insights to inform content strategy, SEO, and messaging
+- **Competitive context:** Always analyze your brand in comparison to competitors
+
+## Advanced intelligence scenarios
+
+### Trend detection
+
+Identify emerging topics and themes in your industry:
+
+```python
+# Monitor industry topics over time
+industry_prompts = [
+    "What are the latest trends in [your industry]?",
+    "What innovations are shaping [your industry]?",
+    "What are the biggest challenges in [your industry]?"
+]
+
+# Run monthly and compare results
+trends_january = monitor_brand_visibility(industry_prompts)
+trends_february = monitor_brand_visibility(industry_prompts)
+
+# Analyze changes
+```
+
+### Geographic monitoring
+
+Track regional differences in brand presentation:
+
+```python
+regions = ['US', 'GB', 'DE']
+
+for region in regions:
+    payload = {
+        'prompt': 'Best [product category] companies',
+        'country': region
+    }
+    # Analyze regional differences
+```
+
+## Related API features
+
+- [Request parameters](/api-reference/parameters) - Configure monitoring requests
+- [Query fan-out insights](/api-reference/parameters#search-queries) - Understand ChatGPT's research process
+- [Shopping cards](/api-reference/response-structure#shopping-cards) - Track product visibility
+
+## Next steps
+
+Explore other use cases for the ChatGPT Scraper API:
+
+- [E-commerce tracking](/use-cases/ecommerce-tracking)
+- [AI research and benchmarking](/use-cases/ai-research)
+- [Content generation automation](/use-cases/content-generation)

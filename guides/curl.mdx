@@ -1,0 +1,408 @@
+---
+title: cURL usage guide
+description: Learn how to use the ChatGPT Scraper API with cURL for quick testing and shell script integration
+---
+
+This guide shows you how to use the ChatGPT Scraper API with cURL to programmatically collect AI-generated responses from the command line or shell scripts.
+
+## Quick start
+
+<Steps>
+  <Step title="Set your API key">
+    Replace `YOUR_API_KEY` with your actual API key from the cloro dashboard.
+    
+    ```bash
+    export CLORO_API_KEY="YOUR_API_KEY"
+    ```
+  </Step>
+
+  <Step title="Make a basic request">
+    Send a POST request to the ChatGPT API endpoint.
+    
+    ```bash
+    curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "prompt": "Compare the top 3 programming languages for web development in 2025",
+        "country": "US",
+        "include": {
+          "markdown": true,
+          "rawResponse": true,
+          "searchQueries": true
+        }
+      }'
+    ```
+  </Step>
+
+  <Step title="Process the response">
+    The API returns a JSON response that you can pipe to other commands or save to a file.
+    
+    ```bash
+    # Pretty print the response
+    curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+      -H "Authorization: Bearer $CLORO_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"prompt": "Your prompt here"}' | jq .
+    
+    # Save to file
+    curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+      -H "Authorization: Bearer $CLORO_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"prompt": "Your prompt here"}' > response.json
+    ```
+  </Step>
+</Steps>
+
+## Complete example
+
+<CodeGroup>
+```bash Basic request
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Compare the top 3 programming languages for web development in 2025",
+    "country": "US",
+    "include": {
+      "markdown": true,
+      "rawResponse": true,
+      "searchQueries": true
+    }
+  }'
+```
+
+```bash With environment variable
+# Set your API key once
+export CLORO_API_KEY="YOUR_API_KEY"
+
+# Make requests using the variable
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer $CLORO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Compare the top 3 programming languages for web development in 2025",
+    "country": "US",
+    "include": {
+      "markdown": true,
+      "rawResponse": true,
+      "searchQueries": true
+    }
+  }'
+```
+
+```bash With JSON file
+# Create a payload.json file
+cat > payload.json << 'EOF'
+{
+  "prompt": "Compare the top 3 programming languages for web development in 2025",
+  "country": "US",
+  "include": {
+    "markdown": true,
+    "rawResponse": true,
+    "searchQueries": true
+  }
+}
+EOF
+
+# Use the file in your request
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @payload.json
+```
+</CodeGroup>
+
+## Request headers
+
+You must include these headers in every request:
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `Authorization` | `Bearer YOUR_API_KEY` | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+<Note>
+  The `Authorization` header must use the `Bearer` scheme with your API key. The `Content-Type` header tells the API that you're sending JSON data.
+</Note>
+
+## Formatting the JSON payload
+
+When using cURL, you have several options for formatting your JSON payload:
+
+### Inline JSON
+
+For simple requests, you can include the JSON directly in the command:
+
+```bash
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here", "country": "US"}'
+```
+
+### Multi-line JSON
+
+For better readability, use multi-line formatting:
+
+```bash
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Compare the top 3 programming languages for web development in 2025",
+    "country": "US",
+    "include": {
+      "markdown": true,
+      "rawResponse": true,
+      "searchQueries": true
+    }
+  }'
+```
+
+### External JSON file
+
+For complex payloads or reusable requests, use an external file:
+
+```bash
+# Create the payload file
+echo '{
+  "prompt": "Your prompt here",
+  "country": "US"
+}' > payload.json
+
+# Reference it with @filename
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @payload.json
+```
+
+<Tip>
+  Using external JSON files makes it easier to maintain complex payloads and reuse them across multiple requests.
+</Tip>
+
+## Request parameters
+
+Customize your API request using these parameters in the JSON payload:
+
+| Parameter | Description | Default value |
+|-----------|-------------|---------------|
+| `prompt`* | The prompt or question to send to ChatGPT (1-10,000 characters) | – |
+| `country` | Optional country/region code for localized monitoring (e.g., `US`, `GB`, `DE`) | – |
+| `include.markdown` | Include response in Markdown format when set to true | `false` |
+| `include.rawResponse` | Include raw streaming response events for debugging (+2 credits) | `false` |
+| `include.searchQueries` | Include query fan-out ChatGPT used to generate response (+2 credits) | `false` |
+
+<Note>
+  The `prompt` parameter is mandatory. All other parameters are optional.
+</Note>
+
+## Handling the response
+
+The API returns a JSON response with this structure:
+
+```json
+{
+  "status": "success",
+  "result": {
+    "model": "gpt-5-mini",
+    "text": "When comparing programming languages for web development in 2025, three languages stand out...",
+    "markdown": "**When comparing programming languages for web development in 2025**, three languages stand out...",
+    "shoppingCards": [...],
+    "searchQueries": ["web development languages 2025"],
+    "rawResponse": [...]
+  }
+}
+```
+
+### Save response to file
+
+```bash
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}' \
+  > response.json
+```
+
+### Pretty print with jq
+
+```bash
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}' | jq .
+```
+
+### Extract specific fields
+
+```bash
+# Get just the text response
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}' | jq -r '.result.text'
+
+# Get the model used
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}' | jq -r '.result.model'
+```
+
+## Timeout configuration
+
+<Tip>
+  Set an appropriate timeout (120-180 seconds) when making requests, as ChatGPT responses may take time to generate depending on complexity.
+</Tip>
+
+```bash
+# Set timeout to 180 seconds (3 minutes)
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  --max-time 180 \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}'
+```
+
+For production use, implement a retry mechanism instead of relying solely on timeouts, as the cloro system retries automatically.
+
+## Error handling best practices
+
+Implement robust error handling in your shell scripts:
+
+```bash
+#!/bin/bash
+
+# Configuration
+API_KEY="YOUR_API_KEY"
+MAX_RETRIES=3
+RETRY_DELAY=5
+
+# Function to make API request with retry logic
+make_chatgpt_request() {
+  local prompt="$1"
+  local attempt=1
+  
+  while [ $attempt -le $MAX_RETRIES ]; do
+    echo "Attempt $attempt of $MAX_RETRIES..."
+    
+    # Make the request and capture HTTP status code
+    response=$(curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+      --max-time 180 \
+      -w "\n%{http_code}" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"prompt\": \"$prompt\"}" \
+      2>/dev/null)
+    
+    # Extract status code from last line
+    http_code=$(echo "$response" | tail -n1)
+    body=$(echo "$response" | sed '$d')
+    
+    # Check status code
+    if [ "$http_code" -eq 200 ]; then
+      echo "$body"
+      return 0
+    elif [ "$http_code" -eq 429 ]; then
+      echo "Rate limit reached. Waiting before retry..." >&2
+      sleep 10
+    elif [ "$http_code" -ge 500 ]; then
+      echo "Server error ($http_code). Retrying..." >&2
+      sleep $RETRY_DELAY
+    else
+      echo "Request failed with status $http_code" >&2
+      echo "$body" >&2
+      return 1
+    fi
+    
+    attempt=$((attempt + 1))
+  done
+  
+  echo "Max retries reached. Request failed." >&2
+  return 1
+}
+
+# Usage
+if result=$(make_chatgpt_request "Compare the top 3 programming languages"); then
+  echo "Success!"
+  echo "$result" | jq -r '.result.text'
+else
+  echo "Failed to get response"
+  exit 1
+fi
+```
+
+## Checking response status
+
+Always verify the HTTP status code and the `status` field:
+
+```bash
+# Include HTTP status code in output
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -w "\nHTTP Status: %{http_code}\n" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}'
+
+# Check status field in JSON response
+curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Your prompt here"}' | jq -r '.status'
+```
+
+## Shell script integration
+
+Here's a complete example of integrating the API into a shell script:
+
+```bash
+#!/bin/bash
+
+# Load API key from environment or config file
+API_KEY="${CLORO_API_KEY:-YOUR_API_KEY}"
+
+# Create payload
+read -r -d '' PAYLOAD << EOF
+{
+  "prompt": "Compare the top 3 programming languages for web development in 2025",
+  "country": "US",
+  "include": {
+    "markdown": true
+  }
+}
+EOF
+
+# Make request
+response=$(curl -X POST https://api.cloro.dev/v1/monitor/chatgpt \
+  --max-time 180 \
+  --silent \
+  --show-error \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "$PAYLOAD")
+
+# Check if request was successful
+if [ $? -eq 0 ]; then
+  # Extract and display the text response
+  echo "$response" | jq -r '.result.text'
+  
+  # Save full response to file
+  echo "$response" | jq . > response.json
+  echo "Full response saved to response.json"
+else
+  echo "Request failed" >&2
+  exit 1
+fi
+```
+
+<Note>
+  Always validate the response structure and check for the `success` status before attempting to access nested fields.
+</Note>
+
+## Next steps
+
+- Explore the [API reference](/api-reference) for detailed endpoint documentation
+- Learn about [shopping card extraction](/features/shopping-cards) for e-commerce data
+- Check out [advanced features](/features/advanced) like query fan-out insights

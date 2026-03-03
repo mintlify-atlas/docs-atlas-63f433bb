@@ -1,0 +1,265 @@
+---
+title: AI research and benchmarking
+description: Analyze ChatGPT's responses with raw response data and query fan-out insights for research and testing
+---
+
+## What is AI research and benchmarking?
+
+The ChatGPT Scraper API provides advanced features for researchers, data scientists, and developers who need to analyze ChatGPT's behavior, response patterns, and internal query mechanisms. With access to raw response data and query fan-out insights, you can conduct deep analysis of how ChatGPT processes prompts and generates responses.
+
+## Why use the API for AI research?
+
+Understanding how ChatGPT works internally is crucial for:
+
+- **Model benchmarking:** Compare ChatGPT's performance across different prompts and topics
+- **Response analysis:** Study how ChatGPT structures and generates its answers
+- **Query optimization:** Learn how to craft better prompts based on internal query patterns
+- **Academic research:** Collect structured data for AI behavior studies and publications
+- **Quality assurance:** Test and validate ChatGPT's responses for production applications
+
+<Note>
+Advanced research features like raw response access and query fan-out insights require additional credits but provide invaluable data for serious research and development work.
+</Note>
+
+## Key features for research
+
+<CardGroup cols={2}>
+  <Card title="Raw response access" icon="code">
+    Access the complete streaming response payload for advanced debugging, timing analysis, and low-level metadata
+  </Card>
+  
+  <Card title="Query fan-out insights" icon="network-wired">
+    See the actual search queries ChatGPT uses internally to gather information for its responses
+  </Card>
+  
+  <Card title="Structured output" icon="database">
+    Retrieve responses as parsed JSON with consistent schema for easy analysis and storage
+  </Card>
+  
+  <Card title="Multiple formats" icon="file-alt">
+    Access responses in plain text, Markdown, or raw HTML for different research needs
+  </Card>
+</CardGroup>
+
+## Query fan-out insights
+
+When you enable `include.searchQueries` (+2 credits), the API reveals how ChatGPT interprets and breaks down your prompt internally.
+
+### What you learn from query fan-out:
+
+- **Prompt interpretation:** How ChatGPT understands and decomposes your question
+- **Search strategy:** What specific searches it performs to gather information
+- **Information sources:** Which topics and queries it prioritizes
+- **Optimization opportunities:** How to refine prompts for better results
+
+<Tip>
+Analyze query fan-out patterns across multiple prompts to develop a systematic understanding of how ChatGPT processes different types of questions.
+</Tip>
+
+### Example query fan-out analysis
+
+```python
+import requests
+
+payload = {
+    'prompt': 'Compare the top 3 programming languages for web development in 2025',
+    'country': 'US',
+    'include': {
+        'searchQueries': True
+    }
+}
+
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+
+data = response.json()
+
+# Analyze the queries ChatGPT used internally
+if 'searchQueries' in data['result']:
+    print("ChatGPT used these queries:")
+    for query in data['result']['searchQueries']:
+        print(f"  - {query}")
+```
+
+## Raw response access
+
+Enable `include.rawResponse` (+2 credits) to access the complete streaming response payload.
+
+### Use cases for raw response data:
+
+- **Timing analysis:** Understand response generation speed and patterns
+- **Debugging:** Investigate unexpected behaviors or errors
+- **Metadata extraction:** Access low-level response information not in structured output
+- **Stream processing:** Study how ChatGPT streams responses in real-time
+
+### Example raw response analysis
+
+```python
+import requests
+import json
+
+payload = {
+    'prompt': 'Explain quantum computing in simple terms',
+    'include': {
+        'rawResponse': True,
+        'markdown': True
+    }
+}
+
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+
+data = response.json()
+
+# Save raw response for detailed analysis
+if 'rawResponse' in data['result']:
+    with open('raw_response.json', 'w') as f:
+        json.dump(data['result']['rawResponse'], f, indent=2)
+    
+    print(f"Raw response events: {len(data['result']['rawResponse'])}")
+```
+
+## Research workflow
+
+### Step 1: Design your research study
+
+Define your research questions and required data:
+
+- What aspects of ChatGPT do you want to analyze?
+- Do you need query fan-out, raw responses, or both?
+- What output format works best for your analysis pipeline?
+
+### Step 2: Collect structured data
+
+Submit prompts with appropriate parameters:
+
+```python
+import requests
+import time
+
+prompts = [
+    "What is machine learning?",
+    "Explain deep learning",
+    "Compare supervised and unsupervised learning"
+]
+
+results = []
+
+for prompt in prompts:
+    payload = {
+        'prompt': prompt,
+        'include': {
+            'markdown': True,
+            'rawResponse': True,
+            'searchQueries': True
+        }
+    }
+    
+    response = requests.post(
+        'https://api.cloro.dev/v1/monitor/chatgpt',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'},
+        json=payload,
+        timeout=180  # 3 minutes timeout
+    )
+    
+    results.append(response.json())
+    time.sleep(1)  # Rate limiting
+```
+
+### Step 3: Analyze and benchmark
+
+Process collected data for insights:
+
+```python
+# Analyze response characteristics
+for i, result in enumerate(results):
+    data = result['result']
+    
+    print(f"\nPrompt {i+1}: {prompts[i]}")
+    print(f"Model: {data['model']}")
+    print(f"Response length: {len(data['text'])} characters")
+    
+    if 'searchQueries' in data:
+        print(f"Search queries used: {len(data['searchQueries'])}")
+        print(f"Queries: {', '.join(data['searchQueries'])}")
+    
+    if 'rawResponse' in data:
+        print(f"Raw events: {len(data['rawResponse'])}")
+```
+
+<Note>
+When conducting large-scale research, implement rate limiting and error handling to ensure reliable data collection.
+</Note>
+
+## Benchmarking best practices
+
+<CardGroup cols={2}>
+  <Card title="Consistent parameters" icon="sliders">
+    Use the same API parameters across test runs to ensure comparable results
+  </Card>
+  
+  <Card title="Multiple samples" icon="repeat">
+    Collect multiple responses for each prompt to account for response variability
+  </Card>
+  
+  <Card title="Structured storage" icon="database">
+    Save responses in a structured format (JSON) for easy analysis and reproducibility
+  </Card>
+  
+  <Card title="Timeout handling" icon="clock">
+    Set appropriate timeouts (120-180 seconds) to handle complex prompts
+  </Card>
+</CardGroup>
+
+## Advanced research scenarios
+
+### Prompt optimization studies
+
+Use query fan-out to understand how different prompt formulations affect information retrieval:
+
+```python
+prompt_variations = [
+    "Best programming languages 2025",
+    "What are the top programming languages in 2025?",
+    "Compare the best programming languages for 2025"
+]
+
+# Analyze how ChatGPT interprets each variation
+for prompt in prompt_variations:
+    # Submit request and analyze searchQueries
+    pass
+```
+
+### Model comparison
+
+Track which ChatGPT model versions are used:
+
+```python
+model_usage = {}
+
+for result in results:
+    model = result['result']['model']
+    model_usage[model] = model_usage.get(model, 0) + 1
+
+print("Model distribution:", model_usage)
+```
+
+## Related API features
+
+- [Request parameters](/api-reference/parameters) - Configure advanced research options
+- [Response structure](/api-reference/response-structure) - Understand the data schema
+- [Credit usage](/api-reference/credits) - Plan your research budget
+
+## Next steps
+
+Explore other use cases for the ChatGPT Scraper API:
+
+- [E-commerce tracking](/use-cases/ecommerce-tracking)
+- [Content generation automation](/use-cases/content-generation)
+- [Competitive intelligence](/use-cases/competitive-intelligence)

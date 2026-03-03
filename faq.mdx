@@ -1,0 +1,110 @@
+---
+title: FAQ
+description: Frequently asked questions about the ChatGPT Scraper API
+---
+
+## Frequently asked questions
+
+Find answers to common questions about using the ChatGPT Scraper API.
+
+<Accordion title="Is scraping ChatGPT allowed?">
+  Any website is legal to be scraped as long as the information is publicly accessible. ChatGPT's public interface can be scraped for legitimate research, analysis, and business purposes.
+</Accordion>
+
+<Accordion title="What makes cloro's ChatGPT scraper unique?">
+  cloro's ChatGPT endpoint is the most reliable and comprehensive monitoring solution available, offering:
+  
+  - **Automatic shopping card extraction** for e-commerce data
+  - **Query fan-out insights** to see ChatGPT's internal search queries
+  - **Raw response access** for advanced debugging and analysis
+  - **>99% uptime** with low latencies (P50 < 60s, P90 < 120s)
+  - **No infrastructure hassle** - we handle rate limiting and browser management
+</Accordion>
+
+<Accordion title="What's the recommended timeout?">
+  We don't recommend putting any timeout, given that our system retries automatically. We recommend setting up a retry mechanism in case of failure.
+  
+  However, if you must set a timeout, use 120-180 seconds as ChatGPT responses may take time to generate depending on complexity.
+</Accordion>
+
+<Accordion title="How does credit usage work?">
+  The base ChatGPT scraper request uses **5 credits**. Additional features have extra costs:
+  
+  - `include.rawResponse`: +2 credits per request
+  - `include.searchQueries`: +2 credits per request
+  
+  You can combine multiple features, and credits are added together. For example, enabling both `rawResponse` and `searchQueries` would cost 9 credits total (5 base + 2 + 2).
+</Accordion>
+
+<Accordion title="Do shopping cards require extra credits?">
+  No, shopping cards are automatically extracted when available at no additional cost. They're included by default in the response structure.
+  
+  When ChatGPT returns product or commercial information, cloro automatically extracts comprehensive shopping data including product titles, prices, ratings, merchant information, and multiple offers - all at no extra charge.
+</Accordion>
+
+<Accordion title="What formats can I get the response in?">
+  The ChatGPT Scraper API returns structured JSON by default, which includes:
+  
+  - Plain text response (`result.text`)
+  - Optional Markdown format (`result.markdown` when `include.markdown: true`)
+  - Shopping cards when available
+  - Model information
+  - Optional raw response and search queries
+  
+  The Markdown format is particularly useful for integration with AI tools and documentation workflows.
+</Accordion>
+
+<Accordion title="How reliable is the service?">
+  cloro maintains >99% uptime with consistent performance:
+  
+  - P50 latency: < 60 seconds
+  - P90 latency: < 120 seconds
+  - Automatic retry mechanisms
+  - No infrastructure management required
+  
+  We handle all rate limiting, browser management, and anti-bot systems so you can focus on building your application.
+</Accordion>
+
+<Accordion title="What are shopping cards?">
+  Shopping cards are structured product data automatically extracted from ChatGPT responses when product or commercial information is included. Each shopping card contains:
+  
+  - Product titles, prices, and images
+  - Ratings and review counts
+  - Multiple merchant offers for price comparison
+  - Stock and delivery information
+  - Promotional tags (e.g., "Best price")
+  - Rating citations and supporting websites
+  
+  This feature is unique to cloro's ChatGPT scraper and requires no additional parameters or credits.
+</Accordion>
+
+<Accordion title="Can I use this for e-commerce monitoring?">
+  Yes! The ChatGPT Scraper API is excellent for e-commerce use cases:
+  
+  - Track how ChatGPT surfaces and recommends products
+  - Monitor pricing across different merchants
+  - Extract structured product data for competitive analysis
+  - Understand marketing intelligence and product positioning
+  
+  Shopping cards provide comprehensive e-commerce data automatically.
+</Accordion>
+
+<Accordion title="What other scrapers does cloro offer?">
+  cloro provides scrapers for all major AI platforms:
+  
+  - **AI Mode** - Google AI Mode scraper
+  - **AI Overview** - Google AI Overview scraper
+  - **Gemini** - Google Gemini scraper
+  - **ChatGPT** - ChatGPT scraper with shopping cards
+  - **Copilot** - Microsoft Copilot scraper
+  - **Google Search** - Google Search results scraper
+  - **Perplexity** - Perplexity AI scraper
+  
+  All scrapers use the same simple API design and credit system.
+</Accordion>
+
+## Still have questions?
+
+<Card title="Contact support" icon="message" href="https://cloro.dev/contact">
+  Our responsive support team is ready to help with integration, troubleshooting, and any other questions.
+</Card>

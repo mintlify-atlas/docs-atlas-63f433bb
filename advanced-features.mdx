@@ -1,0 +1,175 @@
+---
+title: Advanced features
+description: Access query fan-out insights and raw response data for advanced debugging and analysis
+---
+
+The ChatGPT Scraper API provides advanced features that give you deeper insight into how ChatGPT generates responses. These optional features help with debugging, prompt optimization, and understanding ChatGPT's internal processing.
+
+## Query fan-out insights
+
+When you set `include.searchQueries` to `true`, the API reveals the actual query fan-out that ChatGPT used internally to generate its response.
+
+<Note>
+Enabling `include.searchQueries` adds +2 credits to your request cost.
+</Note>
+
+### What you get
+
+The `searchQueries` field in the response contains an array of the specific searches ChatGPT performed to gather information:
+
+```json
+{
+  "status": "success",
+  "result": {
+    "text": "When comparing programming languages...",
+    "searchQueries": ["web development languages 2025"]
+  }
+}
+```
+
+### Use cases for query fan-out
+
+<Accordion title="Understand ChatGPT's interpretation">
+  See how ChatGPT interprets and breaks down your prompt into specific search queries. This reveals what aspects of your prompt ChatGPT considers most relevant.
+</Accordion>
+
+<Accordion title="Optimize your prompts">
+  Analyze which searches ChatGPT performs to improve your prompt engineering. If the search queries don't match your intent, refine your prompts accordingly.
+</Accordion>
+
+<Accordion title="Research and benchmarking">
+  Study ChatGPT's information gathering strategy for AI research and competitive analysis. Compare how different prompts lead to different search patterns.
+</Accordion>
+
+<Accordion title="Quality assurance">
+  Verify that ChatGPT is searching for the right information to answer your query. Identify cases where the search queries might miss important context.
+</Accordion>
+
+### How to enable
+
+Add the `include.searchQueries` parameter to your request:
+
+```python
+payload = {
+    'prompt': 'Your prompt here',
+    'include': {
+        'searchQueries': True
+    }
+}
+```
+
+<Tip>
+Query fan-out insights are particularly valuable for prompt optimization. Use them to understand why certain prompts produce better results than others.
+</Tip>
+
+## Raw response access
+
+Enable `include.rawResponse` to access the complete streaming response payload that ChatGPT generates during the response process.
+
+<Note>
+Enabling `include.rawResponse` adds +2 credits to your request cost.
+</Note>
+
+### What you get
+
+The `rawResponse` field contains an array of ChatGPT's streamed response events, providing low-level access to the complete response generation process:
+
+```json
+{
+  "status": "success",
+  "result": {
+    "text": "When comparing programming languages...",
+    "rawResponse": [
+      // Array of streaming response events
+    ]
+  }
+}
+```
+
+### Use cases for raw response
+
+<Accordion title="Advanced debugging">
+  Access the complete streaming payload to debug issues with response parsing or identify unexpected behavior in ChatGPT's output.
+</Accordion>
+
+<Accordion title="Response timing analysis">
+  Understand the timing of response generation by analyzing the streaming events. This can help you optimize timeout settings and user experience.
+</Accordion>
+
+<Accordion title="Low-level metadata access">
+  Access response metadata that may not be available in the parsed JSON structure. Useful for advanced integrations and custom processing.
+</Accordion>
+
+<Accordion title="Research and development">
+  Study the complete response structure for AI research projects or to develop custom parsing logic for specific use cases.
+</Accordion>
+
+### How to enable
+
+Add the `include.rawResponse` parameter to your request:
+
+```python
+payload = {
+    'prompt': 'Your prompt here',
+    'include': {
+        'rawResponse': True
+    }
+}
+```
+
+<Info>
+Raw response data is useful for debugging but typically not needed for standard API usage. The parsed JSON structure provides all the information you need for most use cases.
+</Info>
+
+## Combining advanced features
+
+You can enable both advanced features simultaneously to get comprehensive insights:
+
+```python
+import requests
+
+payload = {
+    'prompt': 'Compare the top 3 programming languages for web development in 2025',
+    'country': 'US',
+    'include': {
+        'markdown': True,
+        'rawResponse': True,
+        'searchQueries': True
+    }
+}
+
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+```
+
+<Note>
+When you enable both features, the total additional cost is +4 credits (+2 for `searchQueries` + 2 for `rawResponse`).
+</Note>
+
+## Credit usage summary
+
+Understand the credit costs for advanced features:
+
+| Feature | Additional Cost | What You Get |
+|---------|----------------|-------------|
+| Base request | 5 credits | Complete ChatGPT response with text, shopping cards, and metadata |
+| `include.searchQueries` | +2 credits | Query fan-out insights showing ChatGPT's internal searches |
+| `include.rawResponse` | +2 credits | Complete streaming response payload for debugging |
+| Both features | +4 credits | Full access to query insights and raw response data |
+
+<Tip>
+Advanced features are optional. Start with the base API to get structured responses, then add advanced features when you need deeper insights or debugging capabilities.
+</Tip>
+
+## When to use advanced features
+
+Consider enabling these features when:
+
+- **Developing and testing**: Use both features during development to understand how ChatGPT processes your prompts
+- **Debugging issues**: Enable `rawResponse` when you encounter unexpected behavior or parsing problems
+- **Optimizing prompts**: Use `searchQueries` to refine your prompts based on ChatGPT's search patterns
+- **Research projects**: Both features provide valuable data for AI research and competitive analysis
+- **Production monitoring**: Selectively enable for sample requests to monitor quality and performance

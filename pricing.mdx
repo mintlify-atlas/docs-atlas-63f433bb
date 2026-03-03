@@ -1,0 +1,86 @@
+---
+title: Pricing
+description: Understand the credit system and pricing for the ChatGPT Scraper API
+---
+
+## Credit system
+
+The ChatGPT Scraper API uses a credit-based pricing model. Each request consumes credits based on the features you enable.
+
+### Base request cost
+
+A standard ChatGPT scraper request costs **5 credits**. This includes:
+
+- ChatGPT response text
+- Model information
+- Automatic shopping card extraction (when available)
+- Optional Markdown formatting
+
+<Note>
+Shopping cards are included at no extra cost. When ChatGPT returns product or commercial information, structured shopping data is automatically extracted and included in your response.
+</Note>
+
+### Additional features
+
+You can enhance your requests with optional features that require additional credits:
+
+<Card title="Raw response" icon="code">
+  **+2 credits** per request
+  
+  Access the complete streaming response payload for advanced debugging, response generation timing analysis, and low-level metadata.
+  
+  Enable with: `include.rawResponse: true`
+</Card>
+
+<Card title="Search queries" icon="magnifying-glass">
+  **+2 credits** per request
+  
+  Reveals the actual query fan-out ChatGPT used internally to generate its response. Provides insights into how ChatGPT interprets your prompt and what searches it performs.
+  
+  Enable with: `include.searchQueries: true`
+</Card>
+
+### Credit calculation examples
+
+| Request configuration | Credits used |
+|----------------------|-------------|
+| Base request only | 5 credits |
+| Base + rawResponse | 7 credits |
+| Base + searchQueries | 7 credits |
+| Base + rawResponse + searchQueries | 9 credits |
+| Base + shopping cards (automatic) | 5 credits |
+
+<Info>
+Shopping cards are automatically extracted when available in ChatGPT's response at no additional cost.
+</Info>
+
+## Subscription model
+
+The ChatGPT Scraper API uses a low-cost subscription model with transparent pricing. Benefits include:
+
+- Predictable monthly costs
+- Volume discounts for high-usage plans
+- No infrastructure or maintenance overhead
+- >99% uptime guarantee
+
+<Card title="View pricing plans" icon="tag" href="https://cloro.dev">
+  Visit cloro.dev to see detailed pricing tiers, volume discounts, and subscription options.
+</Card>
+
+## Why the credit system?
+
+The credit-based model ensures you only pay for what you use:
+
+- **Transparent costs:** Know exactly how many credits each request will consume
+- **Flexible usage:** Enable advanced features only when you need them
+- **No surprises:** Shopping cards don't increase costs
+- **Scalable:** Volume discounts make high-volume usage more economical
+
+## Getting started
+
+Ready to start scraping ChatGPT? Visit [cloro.dev](https://cloro.dev) to:
+
+- View detailed pricing plans
+- Sign up for an API key
+- Access your credit dashboard
+- Configure volume discounts

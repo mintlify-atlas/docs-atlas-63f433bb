@@ -1,0 +1,117 @@
+---
+title: 'Response Structure'
+description: 'Main response fields returned by the ChatGPT Scraper API'
+---
+
+## Overview
+
+The ChatGPT Scraper API returns a structured JSON object containing ChatGPT's response and metadata. The number of items and fields may vary depending on the submitted prompt and whether shopping cards are available in the response.
+
+## Main Response Fields
+
+<ResponseField name="status" type="string">
+  Status of the monitoring request (e.g., `success`).
+</ResponseField>
+
+<ResponseField name="result.model" type="string">
+  The ChatGPT model used to generate the response (e.g., `gpt-5-mini`).
+</ResponseField>
+
+<ResponseField name="result.text" type="string">
+  The complete ChatGPT response as plain text.
+</ResponseField>
+
+<ResponseField name="result.markdown" type="string">
+  The response formatted in Markdown. Only included when `include.markdown` is set to `true` in the request.
+</ResponseField>
+
+<ResponseField name="result.shoppingCards" type="array">
+  Array of shopping/product cards extracted from the response. Automatically included when available at no additional cost.
+  
+  See [Shopping Cards Schema](/api/shopping-cards-schema) for detailed structure.
+</ResponseField>
+
+<ResponseField name="result.searchQueries" type="array">
+  Query fan-out ChatGPT used to generate the response. Only included when `include.searchQueries` is set to `true` in the request (+2 credits).
+  
+  This provides insight into how ChatGPT interprets and breaks down your prompt internally.
+</ResponseField>
+
+<ResponseField name="result.rawResponse" type="array">
+  Array of ChatGPT's streamed response events. Only included when `include.rawResponse` is set to `true` in the request (+2 credits).
+  
+  Useful for advanced debugging and understanding response generation timing.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "status": "success",
+  "result": {
+    "model": "gpt-5-mini",
+    "text": "When comparing programming languages for web development in 2025, three languages stand out...",
+    "markdown": "**When comparing programming languages for web development in 2025**, three languages stand out...",
+    "shoppingCards": [
+      {
+        "tags": ["electronics", "deals"],
+        "products": [
+          {
+            "title": "Example Product",
+            "url": "https://example.com/product",
+            "price": "$57.00",
+            "featured_tag": "electronics",
+            "merchant": "Example Store + others",
+            "imageUrls": ["https://example.com/image.jpg"],
+            "rating": 4.5,
+            "numReviews": 128,
+            "id": "prod_123",
+            "offers": [...],
+            "rating_grouped_citation": {...}
+          }
+        ]
+      }
+    ],
+    "searchQueries": ["web development languages 2025"],
+    "rawResponse": [...]
+  }
+}
+```
+
+## Response Formats
+
+The API supports multiple output formats:
+
+### Plain Text
+
+Always included in `result.text`. The complete ChatGPT response as plain text.
+
+### Markdown
+
+Optionally included in `result.markdown` when `include.markdown` is set to `true`. The response formatted in Markdown for easier integration with AI tools and documentation workflows.
+
+### Shopping Cards
+
+Automatically extracted when ChatGPT returns product or commercial information. No additional parameters required.
+
+## Optional Fields
+
+Some fields are only included when specific request parameters are enabled:
+
+| Field | Required Parameter | Additional Cost |
+|-------|-------------------|------------------|
+| `result.markdown` | `include.markdown: true` | None |
+| `result.searchQueries` | `include.searchQueries: true` | +2 credits |
+| `result.rawResponse` | `include.rawResponse: true` | +2 credits |
+| `result.shoppingCards` | Always included when available | None |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Shopping Cards Schema" icon="shopping-cart" href="/api/shopping-cards-schema">
+    Detailed shopping card structure
+  </Card>
+  <Card title="Monitor ChatGPT" icon="robot" href="/api/monitor-chatgpt">
+    Back to endpoint documentation
+  </Card>
+</CardGroup>

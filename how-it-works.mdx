@@ -1,0 +1,123 @@
+---
+title: How it works
+description: Learn how the ChatGPT Scraper API handles rendering, parsing, and delivery of AI-generated responses
+---
+
+The ChatGPT Scraper API enables you to programmatically interact with ChatGPT and automatically collect AI-generated responses along with structured metadata. Instead of manual data collection, you can retrieve results as parsed JSON, raw HTML, or other formats for seamless integration into your workflows.
+
+## Request and response flow
+
+The ChatGPT scraper handles the rendering, parsing, and delivery of results in your requested format. You provide your prompt, API credentials, and optional parameters to receive structured responses.
+
+### Making a request
+
+Send a POST request to the API endpoint with your prompt and configuration:
+
+```python
+import requests
+
+payload = {
+    'prompt': 'Compare the top 3 programming languages for web development in 2025',
+    'country': 'US',
+    'include': {
+        'markdown': True,
+        'rawResponse': True,
+        'searchQueries': True
+    }
+}
+
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+```
+
+<Note>
+Set an appropriate timeout of 120-180 seconds when making requests, as ChatGPT responses may take time to generate depending on complexity.
+</Note>
+
+## Authentication
+
+The API uses Bearer token authentication. Include your API key in the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+Every request must include this header to authenticate your API calls.
+
+## Rendering and parsing process
+
+When you submit a request, the ChatGPT scraper:
+
+1. **Handles the rendering** - Manages authentication, sessions, and anti-bot systems automatically
+2. **Processes the prompt** - Sends your prompt to ChatGPT with any specified parameters
+3. **Collects the response** - Captures the complete AI-generated response as it streams
+4. **Parses the data** - Extracts structured metadata including shopping cards, search queries, and more
+5. **Delivers results** - Returns the data in your requested format (JSON, Markdown, etc.)
+
+<Info>
+The scraper eliminates the need for you to manage authentication, sessions, or anti-bot systems yourself.
+</Info>
+
+## Request parameters
+
+You can customize your requests with these parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|----------|
+| `prompt`* | The prompt or question to send to ChatGPT (1-10,000 characters) | – |
+| `country` | Optional country/region code for localized monitoring (e.g., `US`, `GB`, `DE`) | – |
+| `include.markdown` | Include response in Markdown format when set to true | `false` |
+| `include.rawResponse` | Include raw streaming response events for debugging (+2 credits) | `false` |
+| `include.searchQueries` | Include query fan-out ChatGPT used to generate response (+2 credits) | `false` |
+
+\* Mandatory parameter
+
+## Response structure
+
+The API returns a structured JSON object containing ChatGPT's response and metadata:
+
+```json
+{
+  "status": "success",
+  "result": {
+    "model": "gpt-5-mini",
+    "text": "When comparing programming languages for web development in 2025...",
+    "markdown": "**When comparing programming languages for web development in 2025**...",
+    "shoppingCards": [...],
+    "searchQueries": ["web development languages 2025"],
+    "rawResponse": [...]
+  }
+}
+```
+
+## Timeout recommendations
+
+<Tip>
+We recommend setting a timeout of 120-180 seconds for your HTTP requests. ChatGPT responses can take time to generate depending on the complexity of your prompt.
+</Tip>
+
+For production environments, implement a retry mechanism in case of failures rather than relying solely on timeouts. The cloro system retries automatically on its end to ensure reliable delivery.
+
+## Output formats
+
+You can retrieve responses in multiple formats:
+
+<CardGroup cols={2}>
+  <Card title="Plain text" icon="align-left">
+    Default text format in the `result.text` field
+  </Card>
+  <Card title="Markdown" icon="markdown">
+    Formatted response when `include.markdown` is true
+  </Card>
+  <Card title="Structured JSON" icon="brackets-curly">
+    Complete metadata and parsed data
+  </Card>
+  <Card title="Raw HTML" icon="code">
+    Raw response data for advanced debugging
+  </Card>
+</CardGroup>
+
+Alternatively, you can extract the data in Markdown format for easier integration with AI tools and documentation workflows.

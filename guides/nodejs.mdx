@@ -1,0 +1,428 @@
+---
+title: Node.js integration guide
+description: Learn how to integrate the ChatGPT Scraper API into your Node.js applications using axios
+---
+
+This guide shows you how to use the ChatGPT Scraper API with Node.js to programmatically collect AI-generated responses and structured metadata.
+
+## Installation
+
+Install the `axios` HTTP client library:
+
+```bash
+npm install axios
+```
+
+Or if you're using Yarn:
+
+```bash
+yarn add axios
+```
+
+## Quick start
+
+<Steps>
+  <Step title="Import axios">
+    Import the axios library at the top of your file.
+    
+    ```javascript
+    const axios = require('axios');
+    ```
+  </Step>
+
+  <Step title="Configure your request payload">
+    Set up your payload with the prompt and optional parameters. Replace `YOUR_API_KEY` with your actual API key from the cloro dashboard.
+    
+    ```javascript
+    const payload = {
+      prompt: 'Compare the top 3 programming languages for web development in 2025',
+      country: 'US',
+      include: {
+        markdown: true,
+        rawResponse: true,
+        searchQueries: true
+      }
+    };
+    ```
+  </Step>
+
+  <Step title="Make the API request">
+    Send a POST request to the API endpoint and handle the response.
+    
+    ```javascript
+    axios.post('https://api.cloro.dev/v1/monitor/chatgpt', payload, {
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+    ```
+  </Step>
+</Steps>
+
+## Complete examples
+
+<CodeGroup>
+```javascript Promise-based
+const axios = require('axios');
+
+const payload = {
+  prompt: 'Compare the top 3 programming languages for web development in 2025',
+  country: 'US',
+  include: {
+    markdown: true,
+    rawResponse: true,
+    searchQueries: true
+  }
+};
+
+axios.post('https://api.cloro.dev/v1/monitor/chatgpt', payload, {
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => {
+  console.log(response.data);
+})
+.catch(error => {
+  console.error('Error:', error);
+});
+```
+
+```javascript Async/await
+const axios = require('axios');
+
+async function getChatGPTResponse() {
+  try {
+    const payload = {
+      prompt: 'Compare the top 3 programming languages for web development in 2025',
+      country: 'US',
+      include: {
+        markdown: true,
+        rawResponse: true,
+        searchQueries: true
+      }
+    };
+    
+    const response = await axios.post(
+      'https://api.cloro.dev/v1/monitor/chatgpt',
+      payload,
+      {
+        headers: {
+          'Authorization': 'Bearer YOUR_API_KEY',
+          'Content-Type': 'application/json'
+        },
+        timeout: 180000  // 3 minutes
+      }
+    );
+    
+    console.log(response.data);
+    return response.data;
+    
+  } catch (error) {
+    console.error('Error:', error.message);
+    throw error;
+  }
+}
+
+// Call the function
+getChatGPTResponse();
+```
+
+```javascript With file saving
+const axios = require('axios');
+const fs = require('fs').promises;
+
+async function getChatGPTResponse() {
+  try {
+    const payload = {
+      prompt: 'Compare the top 3 programming languages for web development in 2025',
+      country: 'US',
+      include: {
+        markdown: true,
+        rawResponse: true,
+        searchQueries: true
+      }
+    };
+    
+    const response = await axios.post(
+      'https://api.cloro.dev/v1/monitor/chatgpt',
+      payload,
+      {
+        headers: {
+          'Authorization': 'Bearer YOUR_API_KEY',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    // Save to JSON file
+    await fs.writeFile(
+      'response.json',
+      JSON.stringify(response.data, null, 2)
+    );
+    
+    console.log('Response saved to response.json');
+    return response.data;
+    
+  } catch (error) {
+    console.error('Error:', error.message);
+    throw error;
+  }
+}
+
+getChatGPTResponse();
+```
+</CodeGroup>
+
+## Request parameters
+
+Customize your API request using these parameters:
+
+| Parameter | Description | Default value |
+|-----------|-------------|---------------|
+| `prompt`* | The prompt or question to send to ChatGPT (1-10,000 characters) | – |
+| `country` | Optional country/region code for localized monitoring (e.g., `US`, `GB`, `DE`) | – |
+| `include.markdown` | Include response in Markdown format when set to true | `false` |
+| `include.rawResponse` | Include raw streaming response events for debugging (+2 credits) | `false` |
+| `include.searchQueries` | Include query fan-out ChatGPT used to generate response (+2 credits) | `false` |
+
+<Note>
+  The `prompt` parameter is mandatory. All other parameters are optional.
+</Note>
+
+## Handling the response
+
+The API returns a JSON object with the following structure:
+
+```javascript
+{
+  status: 'success',
+  result: {
+    model: 'gpt-5-mini',
+    text: 'When comparing programming languages for web development in 2025, three languages stand out...',
+    markdown: '**When comparing programming languages for web development in 2025**, three languages stand out...',
+    shoppingCards: [...],
+    searchQueries: ['web development languages 2025'],
+    rawResponse: [...]
+  }
+}
+```
+
+Access specific fields from the response:
+
+```javascript
+const { status, result } = response.data;
+const { model, text, markdown } = result;
+
+console.log(`Model: ${model}`);
+console.log(`Response: ${text}`);
+```
+
+## Async/await pattern
+
+<Tip>
+  Use async/await for cleaner, more readable code when working with promises.
+</Tip>
+
+```javascript
+const axios = require('axios');
+
+async function queryChat(prompt) {
+  try {
+    const response = await axios.post(
+      'https://api.cloro.dev/v1/monitor/chatgpt',
+      {
+        prompt: prompt,
+        country: 'US',
+        include: {
+          markdown: true
+        }
+      },
+      {
+        headers: {
+          'Authorization': 'Bearer YOUR_API_KEY',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    return response.data.result;
+  } catch (error) {
+    console.error('Failed to get ChatGPT response:', error.message);
+    throw error;
+  }
+}
+
+// Use the function
+queryChat('What are the benefits of TypeScript?')
+  .then(result => console.log(result.text))
+  .catch(error => console.error(error));
+```
+
+## Timeout configuration
+
+<Tip>
+  Set an appropriate timeout (120-180 seconds) when making requests, as ChatGPT responses may take time to generate depending on complexity.
+</Tip>
+
+```javascript
+const response = await axios.post(
+  'https://api.cloro.dev/v1/monitor/chatgpt',
+  payload,
+  {
+    headers: {
+      'Authorization': 'Bearer YOUR_API_KEY',
+      'Content-Type': 'application/json'
+    },
+    timeout: 180000  // 3 minutes in milliseconds
+  }
+);
+```
+
+For production use, implement a retry mechanism instead of relying solely on timeouts, as the cloro system retries automatically.
+
+## Error handling best practices
+
+Implement robust error handling to manage different failure scenarios:
+
+```javascript
+const axios = require('axios');
+
+async function makeChatGPTRequest(payload, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await axios.post(
+        'https://api.cloro.dev/v1/monitor/chatgpt',
+        payload,
+        {
+          headers: {
+            'Authorization': 'Bearer YOUR_API_KEY',
+            'Content-Type': 'application/json'
+          },
+          timeout: 180000
+        }
+      );
+      
+      return response.data;
+      
+    } catch (error) {
+      // Handle timeout errors
+      if (error.code === 'ECONNABORTED') {
+        console.log(`Attempt ${attempt + 1} timed out`);
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          continue;
+        }
+      }
+      
+      // Handle HTTP errors
+      if (error.response) {
+        const status = error.response.status;
+        
+        if (status === 429) {
+          console.log('Rate limit reached, waiting before retry...');
+          await new Promise(resolve => setTimeout(resolve, 10000));
+          continue;
+        }
+        
+        if (status >= 500 && attempt < maxRetries - 1) {
+          console.log(`Server error on attempt ${attempt + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          continue;
+        }
+        
+        throw new Error(`HTTP ${status}: ${error.response.data.message || 'Request failed'}`);
+      }
+      
+      // Handle network errors
+      if (error.request) {
+        console.log(`Network error on attempt ${attempt + 1}`);
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          continue;
+        }
+      }
+      
+      throw error;
+    }
+  }
+  
+  throw new Error('Max retries reached');
+}
+
+// Usage example
+const payload = {
+  prompt: 'Your prompt here',
+  country: 'US'
+};
+
+makeChatGPTRequest(payload)
+  .then(result => {
+    console.log(result.result.text);
+  })
+  .catch(error => {
+    console.error('Failed to get response:', error.message);
+  });
+```
+
+## Promise vs async/await
+
+You can use either promises or async/await depending on your preference:
+
+<CodeGroup>
+```javascript Promise chain
+axios.post('https://api.cloro.dev/v1/monitor/chatgpt', payload, config)
+  .then(response => {
+    console.log(response.data);
+    return response.data;
+  })
+  .then(data => {
+    // Process data
+    console.log(data.result.text);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+```
+
+```javascript Async/await
+async function processRequest() {
+  try {
+    const response = await axios.post(
+      'https://api.cloro.dev/v1/monitor/chatgpt',
+      payload,
+      config
+    );
+    
+    console.log(response.data);
+    
+    // Process data
+    const data = response.data;
+    console.log(data.result.text);
+    
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+processRequest();
+```
+</CodeGroup>
+
+<Note>
+  Always verify the `status` field in the response is `"success"` before accessing the `result` data.
+</Note>
+
+## Next steps
+
+- Explore the [API reference](/api-reference) for detailed endpoint documentation
+- Learn about [shopping card extraction](/features/shopping-cards) for e-commerce data
+- Check out [advanced features](/features/advanced) like query fan-out insights

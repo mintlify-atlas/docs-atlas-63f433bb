@@ -1,0 +1,148 @@
+---
+title: E-commerce tracking
+description: Monitor product recommendations and pricing with automatic shopping card extraction from ChatGPT
+---
+
+## What is e-commerce tracking?
+
+E-commerce tracking with the ChatGPT Scraper API enables you to monitor how ChatGPT surfaces, recommends, and presents product information to users. With automatic shopping card extraction, you can capture comprehensive product data including prices, ratings, merchant information, and promotional details without any additional configuration.
+
+<Note>
+Shopping cards are automatically extracted when available at no additional cost. They're included by default in the response structure whenever ChatGPT returns product or commercial information.
+</Note>
+
+## Why use ChatGPT for e-commerce monitoring?
+
+As AI assistants become primary discovery tools for consumers, understanding how ChatGPT presents and recommends products is crucial for:
+
+- **Product visibility:** Track how your products appear in AI-generated recommendations
+- **Competitive intelligence:** Monitor how competitor products are positioned
+- **Price monitoring:** Compare pricing across different merchants and marketplaces
+- **Marketing optimization:** Understand which products ChatGPT highlights in responses
+
+## Key features for e-commerce tracking
+
+<CardGroup cols={2}>
+  <Card title="Shopping cards" icon="shopping-cart">
+    Automatically extract structured product data including titles, prices, ratings, reviews, images, and merchant information
+  </Card>
+  
+  <Card title="Multiple offers" icon="tags">
+    Compare prices across different merchants for the same product with detailed offer breakdowns
+  </Card>
+  
+  <Card title="Rating citations" icon="star">
+    Track the source of product ratings and supporting websites to verify data authenticity
+  </Card>
+  
+  <Card title="Promotional tags" icon="badge">
+    Identify special offers like "Best price" or promotional deals automatically
+  </Card>
+</CardGroup>
+
+## Shopping card data structure
+
+Each shopping card includes comprehensive product information:
+
+- **Product details:** Title, URL, price, category tags, and unique identifier
+- **Visual assets:** Product image URLs for display and analysis
+- **Social proof:** Ratings (0-5 scale), number of reviews, and rating sources
+- **Merchant data:** Store names, availability status, and delivery information
+- **Offer comparison:** Multiple pricing options with base and total price breakdowns
+- **Stock information:** Real-time availability and checkout status
+
+<Tip>
+Use the `products[].offers[]` array to compare prices across merchants and identify the best deals for your customers.
+</Tip>
+
+## Practical workflow
+
+Here's how you can implement e-commerce tracking in your application:
+
+### Step 1: Submit product-related prompts
+
+Send prompts about products, recommendations, or comparisons:
+
+```python
+import requests
+
+payload = {
+    'prompt': 'What are the best wireless headphones under $200?',
+    'country': 'US'
+}
+
+response = requests.post(
+    'https://api.cloro.dev/v1/monitor/chatgpt',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=payload
+)
+
+data = response.json()
+```
+
+### Step 2: Extract shopping cards
+
+Access the shopping cards array to retrieve product information:
+
+```python
+if 'shoppingCards' in data['result']:
+    for card in data['result']['shoppingCards']:
+        for product in card['products']:
+            print(f"Product: {product['title']}")
+            print(f"Price: {product['price']}")
+            print(f"Rating: {product['rating']} ({product['numReviews']} reviews)")
+            print(f"Merchant: {product['merchant']}")
+            
+            # Compare offers from different merchants
+            for offer in product['offers']:
+                print(f"  - {offer['merchant_name']}: {offer['price']}")
+                if 'tag' in offer:
+                    print(f"    Tag: {offer['tag']['text']}")
+```
+
+### Step 3: Monitor and analyze
+
+Track product visibility and pricing trends over time:
+
+- Monitor which products appear in ChatGPT recommendations
+- Track price changes across merchants
+- Identify promotional patterns and best price indicators
+- Analyze product positioning and recommendation frequency
+
+<Note>
+Set an appropriate timeout (120-180 seconds) when making requests, as ChatGPT responses may take time to generate depending on complexity.
+</Note>
+
+## Use cases
+
+<CardGroup cols={2}>
+  <Card title="Product recommendation tracking" icon="chart-line">
+    Monitor how often your products appear in ChatGPT recommendations compared to competitors
+  </Card>
+  
+  <Card title="Price intelligence" icon="dollar-sign">
+    Track pricing across merchants and identify opportunities for competitive pricing strategies
+  </Card>
+  
+  <Card title="Marketing intelligence" icon="lightbulb">
+    Understand which product features and benefits ChatGPT emphasizes in responses
+  </Card>
+  
+  <Card title="Product research" icon="magnifying-glass">
+    Extract structured product data for competitive analysis and market research
+  </Card>
+</CardGroup>
+
+## Related API features
+
+- [Shopping cards structure](/api-reference/response-structure#shopping-cards) - Detailed schema documentation
+- [Request parameters](/api-reference/parameters) - Configure your monitoring requests
+- [Authentication](/api-reference/authentication) - Set up API access
+
+## Next steps
+
+Explore other use cases for the ChatGPT Scraper API:
+
+- [AI research and benchmarking](/use-cases/ai-research)
+- [Content generation automation](/use-cases/content-generation)
+- [Competitive intelligence](/use-cases/competitive-intelligence)

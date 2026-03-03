@@ -1,0 +1,154 @@
+---
+title: 'Product Offers Schema'
+description: 'Structure and fields of product offers within shopping cards'
+---
+
+## Overview
+
+Each product in a shopping card can have multiple offers from different merchants. The `offers` array contains detailed information about each merchant's offer, including pricing, availability, and promotional tags.
+
+## Offer Fields
+
+Each offer object in the `products[].offers[]` array contains the following fields:
+
+<ResponseField name="merchant_name" type="string">
+  Merchant name (e.g., `"Example Store"`).
+</ResponseField>
+
+<ResponseField name="product_name" type="string">
+  Product name as listed by the merchant.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Offer URL with ChatGPT attribution.
+</ResponseField>
+
+<ResponseField name="price" type="string">
+  Offer price (e.g., `"$57.00"`).
+</ResponseField>
+
+<ResponseField name="details" type="string">
+  Stock and delivery information (e.g., `"In stock, ships in 2-3 days"`).
+</ResponseField>
+
+<ResponseField name="available" type="boolean">
+  Offer availability status. `true` if the product is available, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="checkoutable" type="boolean">
+  Whether the offer can be checked out directly. `true` if direct checkout is available, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="price_details" type="object">
+  Detailed price breakdown object containing:
+  
+  <Expandable title="properties">
+    <ResponseField name="base" type="string">
+      Base price before additional fees or discounts.
+    </ResponseField>
+    
+    <ResponseField name="total" type="string">
+      Total price including all fees and discounts.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="tag" type="object">
+  Promotional tag object (e.g., "Best price" badge) containing:
+  
+  <Expandable title="properties">
+    <ResponseField name="text" type="string">
+      Tag text (e.g., `"Best price"`).
+    </ResponseField>
+    
+    <ResponseField name="type" type="string">
+      Tag type (e.g., `"promotion"`).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Offer
+
+```json
+{
+  "merchant_name": "Example Store",
+  "product_name": "Example Product",
+  "url": "https://example.com/offer",
+  "price": "$57.00",
+  "details": "In stock, ships in 2-3 days",
+  "available": true,
+  "checkoutable": true,
+  "price_details": {
+    "base": "$57.00",
+    "total": "$57.00"
+  },
+  "tag": {
+    "text": "Best price",
+    "type": "promotion"
+  }
+}
+```
+
+## Multiple Offers Example
+
+A product can have multiple offers from different merchants:
+
+```json
+{
+  "title": "Example Product",
+  "price": "$57.00",
+  "offers": [
+    {
+      "merchant_name": "Example Store",
+      "price": "$57.00",
+      "available": true,
+      "tag": {
+        "text": "Best price",
+        "type": "promotion"
+      }
+    },
+    {
+      "merchant_name": "Another Retailer",
+      "price": "$62.99",
+      "available": true,
+      "tag": {
+        "text": "Free shipping",
+        "type": "promotion"
+      }
+    },
+    {
+      "merchant_name": "Third Store",
+      "price": "$59.50",
+      "available": false,
+      "details": "Out of stock"
+    }
+  ]
+}
+```
+
+## Use Cases
+
+- **Price comparison:** Compare prices across different merchants for the same product
+- **Availability tracking:** Monitor which merchants have the product in stock
+- **Promotional monitoring:** Identify special offers and promotional deals
+- **Checkout optimization:** Find merchants that support direct checkout
+- **Shipping analysis:** Track delivery information and shipping times
+
+## Offer Features
+
+- **Price breakdown:** Separate base and total pricing for transparency
+- **Stock information:** Real-time availability status and delivery details
+- **Promotional tags:** Identify special offers like "Best price" or "Free shipping"
+- **Direct checkout:** Know which offers support immediate purchase
+- **Merchant information:** Track which retailers are offering the product
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Shopping Cards Schema" icon="shopping-cart" href="/api/shopping-cards-schema">
+    Back to shopping card structure
+  </Card>
+  <Card title="Response Structure" icon="brackets-curly" href="/api/response-structure">
+    View all response fields
+  </Card>
+</CardGroup>

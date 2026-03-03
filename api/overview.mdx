@@ -1,0 +1,79 @@
+---
+title: 'API Overview'
+description: 'Get started with the ChatGPT Scraper API - authentication, base URL, and credit system'
+---
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.cloro.dev
+```
+
+## Authentication
+
+The ChatGPT Scraper API uses Bearer token authentication. Include your API key in the `Authorization` header of each request:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+### Getting an API Key
+
+To get your API key:
+
+1. Visit [cloro.dev](https://cloro.dev)
+2. Sign up for an account
+3. Navigate to your dashboard to generate your API key
+
+## Credit System
+
+The ChatGPT Scraper API uses a credit-based pricing model. Each request consumes credits based on the features you enable:
+
+- **Base request with Web Search:** 5 credits
+- **Raw response access** (`include.rawResponse`): +2 credits per request
+- **Search queries insights** (`include.searchQueries`): +2 credits per request
+- **Shopping cards:** Included at no additional cost when available
+
+### Example Credit Usage
+
+A request with all optional features enabled would consume:
+- 5 (base) + 2 (rawResponse) + 2 (searchQueries) = **9 credits total**
+
+## Response Formats
+
+The API returns structured JSON responses containing:
+- ChatGPT's AI-generated text responses
+- Optional Markdown formatting
+- Automatic shopping card extraction (when available)
+- Query fan-out insights (when enabled)
+- Raw streaming response data (when enabled)
+
+## Request Headers
+
+All requests should include the following headers:
+
+```bash
+Content-Type: application/json
+Authorization: Bearer YOUR_API_KEY
+```
+
+## Timeout Recommendations
+
+ChatGPT responses may take time to generate depending on complexity. We recommend:
+
+- **No timeout limit:** Our system handles retries automatically
+- **If you must set a timeout:** Use 120-180 seconds minimum
+- **Implement retry logic:** For handling temporary failures
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Monitor ChatGPT" icon="robot" href="/api/monitor-chatgpt">
+    Learn how to submit prompts to ChatGPT
+  </Card>
+  <Card title="Response Structure" icon="brackets-curly" href="/api/response-structure">
+    Understand the API response format
+  </Card>
+</CardGroup>

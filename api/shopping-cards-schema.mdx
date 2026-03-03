@@ -1,0 +1,153 @@
+---
+title: 'Shopping Cards Schema'
+description: 'Structure and fields of shopping cards automatically extracted from ChatGPT responses'
+---
+
+## Overview
+
+Shopping cards are automatically extracted when ChatGPT returns product or commercial information. No additional parameters are required - shopping cards are included by default when available in the response at no extra cost.
+
+## Shopping Cards Array
+
+The `result.shoppingCards` field contains an array of shopping card objects. Each shopping card represents a group of related products.
+
+<ResponseField name="tags" type="array">
+  Category tags for the shopping card (e.g., `["electronics", "deals"]`).
+</ResponseField>
+
+<ResponseField name="products" type="array">
+  Array of product information objects. See [Product Fields](#product-fields) below for detailed structure.
+</ResponseField>
+
+## Product Fields
+
+Each product object in the `products` array contains the following fields:
+
+<ResponseField name="title" type="string">
+  Product name.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Product page URL with ChatGPT attribution.
+</ResponseField>
+
+<ResponseField name="price" type="string">
+  Current price (e.g., `"$57.00"`).
+</ResponseField>
+
+<ResponseField name="featured_tag" type="string">
+  Product category or style tag.
+</ResponseField>
+
+<ResponseField name="merchant" type="string">
+  Merchant information (e.g., `"Example Store + others"`).
+</ResponseField>
+
+<ResponseField name="imageUrls" type="array">
+  Array of product image URLs.
+</ResponseField>
+
+<ResponseField name="rating" type="float">
+  Product rating on a 0-5 scale.
+</ResponseField>
+
+<ResponseField name="numReviews" type="integer">
+  Number of reviews.
+</ResponseField>
+
+<ResponseField name="id" type="string">
+  Unique product identifier.
+</ResponseField>
+
+<ResponseField name="offers" type="array">
+  Array of shopping offers from different merchants. See [Offers Schema](/api/offers-schema) for detailed structure.
+</ResponseField>
+
+<ResponseField name="rating_grouped_citation" type="object">
+  Rating source information object containing:
+  
+  <Expandable title="properties">
+    <ResponseField name="title" type="string">
+      Source title (e.g., `"Product Reviews"`).
+    </ResponseField>
+    
+    <ResponseField name="url" type="string">
+      Source URL.
+    </ResponseField>
+    
+    <ResponseField name="supporting_websites" type="array">
+      Array of supporting website references.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Shopping Card
+
+```json
+{
+  "tags": ["electronics", "deals"],
+  "products": [
+    {
+      "title": "Example Product",
+      "url": "https://example.com/product",
+      "price": "$57.00",
+      "featured_tag": "electronics",
+      "merchant": "Example Store + others",
+      "imageUrls": ["https://example.com/image.jpg"],
+      "rating": 4.5,
+      "numReviews": 128,
+      "id": "prod_123",
+      "offers": [
+        {
+          "merchant_name": "Example Store",
+          "product_name": "Example Product",
+          "url": "https://example.com/offer",
+          "price": "$57.00",
+          "details": "In stock, ships in 2-3 days",
+          "available": true,
+          "checkoutable": true,
+          "price_details": {
+            "base": "$57.00",
+            "total": "$57.00"
+          },
+          "tag": {
+            "text": "Best price",
+            "type": "promotion"
+          }
+        }
+      ],
+      "rating_grouped_citation": {
+        "title": "Product Reviews",
+        "url": "https://example.com/reviews",
+        "supporting_websites": ["example.com"]
+      }
+    }
+  ]
+}
+```
+
+## Shopping Card Features
+
+- **Comprehensive product data:** Each shopping card includes product titles, prices, ratings, reviews, images, and merchant information
+- **Multiple offers:** Compare prices across different merchants for the same product
+- **Rating citations:** Track the source of product ratings and supporting websites
+- **Promotional tags:** Identify special offers like "Best price" or promotional deals
+- **Stock information:** Check product availability and delivery details
+
+## Use Cases
+
+- **E-commerce monitoring:** Track how ChatGPT surfaces and recommends products
+- **Price comparison:** Monitor pricing across different merchants and marketplaces
+- **Product research:** Extract structured product data for competitive analysis
+- **Marketing intelligence:** Understand which products ChatGPT highlights in responses
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Offers Schema" icon="tags" href="/api/offers-schema">
+    Learn about product offer structure
+  </Card>
+  <Card title="Response Structure" icon="brackets-curly" href="/api/response-structure">
+    Back to main response fields
+  </Card>
+</CardGroup>

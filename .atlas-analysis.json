@@ -1,0 +1,94 @@
+{
+  "projectType": "api-service",
+  "projectName": "ChatGPT Scraper",
+  "projectDescription": "Get parsed markdown, sources, shopping cards and citations from ChatGPT responses programmatically via API.",
+  "theme": "sequoia",
+  "primaryColor": "#10B981",
+  "lightColor": "#34D399",
+  "darkColor": "#059669",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "how-it-works",
+              "shopping-cards",
+              "advanced-features"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/python",
+              "guides/nodejs",
+              "guides/curl"
+            ]
+          },
+          {
+            "group": "Use Cases",
+            "pages": [
+              "use-cases/ecommerce-tracking",
+              "use-cases/ai-research",
+              "use-cases/content-generation",
+              "use-cases/competitive-intelligence"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/overview",
+              "api/monitor-chatgpt"
+            ]
+          },
+          {
+            "group": "Response Schema",
+            "pages": [
+              "api/response-structure",
+              "api/shopping-cards-schema",
+              "api/offers-schema"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Additional Info",
+            "pages": [
+              "pricing",
+              "faq",
+              "support"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Automatic shopping card extraction from ChatGPT responses",
+    "Query fan-out insights to see ChatGPT's internal search queries",
+    "Raw response access for advanced debugging and analysis",
+    "Support for Markdown, JSON, and HTML output formats",
+    "Localized monitoring with country/region codes",
+    "Comprehensive product data with pricing and merchant information"
+  ],
+  "publicApiSurface": [
+    "POST /v1/monitor/chatgpt - Monitor ChatGPT responses with structured data extraction"
+  ]
+}
